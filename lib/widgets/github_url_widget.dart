@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:projects_viewer/provider/git_url_provider.dart';
 
-class GithubUrlWidget extends StatefulWidget {
+class GithubUrlWidget extends ConsumerStatefulWidget {
   const GithubUrlWidget({super.key});
 
   @override
-  State<GithubUrlWidget> createState() => _TechStackWidgetState();
+  ConsumerState<GithubUrlWidget> createState() => _GithubUrlWidgetState();
 }
 
-class _TechStackWidgetState extends State<GithubUrlWidget> {
-  List<String> gitUrls = ['sudokuApp'];
+class _GithubUrlWidgetState extends ConsumerState<GithubUrlWidget> {
   final gitTextEditController = TextEditingController();
 
   bool validateGitUrl(String? value) {
@@ -22,23 +23,23 @@ class _TechStackWidgetState extends State<GithubUrlWidget> {
     return true;
   }
 
-  void addGitRepo(String? value) {
+  void addGitRepo(List<String> gitUrls, String? value) {
     if (validateGitUrl(value)) {
     setState(() {
-      gitUrls.add(value!);
+      ref.watch(gitUrlProvider.notifier).state = [...gitUrls, value!];
       gitTextEditController.clear();
     });
     }
   }
 
-  void removeGitRepo(int index) {
-    setState(() {
-      gitUrls.removeAt(index);
-    });
+  void removeGitRepo(List<String> gitUrls, int index) {
+    ref.watch(gitUrlProvider.notifier).state = (gitUrls..removeAt(index)).toList();
   }
 
   @override
   Widget build(BuildContext context) {
+    List<String> gitUrls = ref.watch(gitUrlProvider);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Card(
@@ -47,8 +48,8 @@ class _TechStackWidgetState extends State<GithubUrlWidget> {
             child: Column(
               children: [
                 const Text("Github Urls", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                ListView.builder(itemCount: gitUrls.length ,shrinkWrap: true ,itemBuilder: (ctx, index) {return ListTile(leading: IconButton(icon: const Icon(Icons.cancel) ,onPressed: () {removeGitRepo(index);},), title: Text(gitUrls[index]));}),
-                ListTile(title: TextField(controller: gitTextEditController ,decoration: const InputDecoration(hintText: "https://github.com/Ahmedazim7804/thisApp")), trailing: IconButton(onPressed: () {addGitRepo(gitTextEditController.text);}, icon: const Icon(Icons.add)),),
+                ListView.builder(itemCount: gitUrls.length ,shrinkWrap: true ,itemBuilder: (ctx, index) {return ListTile(leading: IconButton(icon: const Icon(Icons.cancel) ,onPressed: () {removeGitRepo(gitUrls, index);},), title: Text(gitUrls[index]));}),
+                ListTile(title: TextField(controller: gitTextEditController ,decoration: const InputDecoration(hintText: "https://github.com/Ahmedazim7804/thisApp")), trailing: IconButton(onPressed: () {addGitRepo(gitUrls, gitTextEditController.text);}, icon: const Icon(Icons.add)),),
               ],
             ),
           )

@@ -1,35 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:projects_viewer/provider/tech_stack_provider.dart';
 
-class TechStackWidget extends StatefulWidget {
+class TechStackWidget extends ConsumerStatefulWidget {
   const TechStackWidget({super.key});
 
   @override
-  State<TechStackWidget> createState() => _TechStackWidgetState();
+  ConsumerState<TechStackWidget> createState() => _TechStackWidgetState();
 }
 
-class _TechStackWidgetState extends State<TechStackWidget> {
-  List<String> techStacks = ['flutter', 'dart', 'python'];
+class _TechStackWidgetState extends ConsumerState<TechStackWidget> {
   final textEditController = TextEditingController();
 
-  void addTechStack(String? value) {
+  void addTechStack(List<String> techStacks, String? value) {
     if (value != null && value.trim().isNotEmpty) {
-    setState(() {
-      techStacks.add(value);
-      textEditController.clear();
-    });
+    ref.read(techStackProvider.notifier).state = [...techStacks, value];
+    textEditController.clear();
     }
   }
 
-  void removeTechStack(int index) {
-    setState(() {
-    techStacks.removeAt(index);
-    });
+  void removeTechStack(List<String> techStacks, int index) {
+    ref.read(techStackProvider.notifier).state = (techStacks..removeAt(index)).toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    List<int> wdwdw = [1];
-
+    List<String> techStacks = ref.watch(techStackProvider);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Card(
@@ -38,12 +34,11 @@ class _TechStackWidgetState extends State<TechStackWidget> {
             child: Column(
               children: [
                 const Text("Tech Stacks", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                GridView.builder(itemCount: techStacks.length, shrinkWrap: true ,gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: 3/1) ,itemBuilder: (ctx, index) {return ListTile(leading: IconButton(icon: const Icon(Icons.cancel), onPressed: () {removeTechStack(index);},), title: Text(techStacks[index]));}),
-                Padding(padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),child: ListTile(trailing: IconButton(icon: const Icon(Icons.add_sharp), onPressed: () {addTechStack(textEditController.text);},) , title: TextField(controller: textEditController, onSubmitted: addTechStack, decoration: const InputDecoration(hintText: "i.e, Flutter"),))),
+                GridView.builder(itemCount: techStacks.length, shrinkWrap: true ,gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: 3/1) ,itemBuilder: (ctx, index) {return ListTile(leading: IconButton(icon: const Icon(Icons.cancel), onPressed: () {removeTechStack(techStacks,index);},), title: Text(techStacks[index]));}),
+                Padding(padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),child: ListTile(trailing: IconButton(icon: const Icon(Icons.add_sharp), onPressed: () {addTechStack(techStacks, textEditController.text);},) , title: TextField(controller: textEditController, onSubmitted: (value) {addTechStack(techStacks, value);}, decoration: const InputDecoration(hintText: "i.e, Flutter"),))),
               ],
             ),
           )
-    
       ),
     );
   }
