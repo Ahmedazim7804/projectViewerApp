@@ -16,7 +16,11 @@ class _GithubUrlWidgetState extends ConsumerState<GithubUrlWidget> {
     if (value == null || value.trim().isEmpty) {
       return false;
     }
-    if (value.substring(0, 19) != "https://github.com/" && value.substring(0, 23) != "https://www.github.com/") {
+    if (!value.contains("https://github.com/") && !value.contains("https://www.github.com/")) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Please enter valid git repo url"),
+        ));
       return false;
     }
 
@@ -25,10 +29,8 @@ class _GithubUrlWidgetState extends ConsumerState<GithubUrlWidget> {
 
   void addGitRepo(List<String> gitUrls, String? value) {
     if (validateGitUrl(value)) {
-    setState(() {
-      ref.watch(gitUrlProvider.notifier).state = [...gitUrls, value!];
-      gitTextEditController.clear();
-    });
+    ref.watch(gitUrlProvider.notifier).state = [...gitUrls, value!];
+    gitTextEditController.clear();
     }
   }
 
