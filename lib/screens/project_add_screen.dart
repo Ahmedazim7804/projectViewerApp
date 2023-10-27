@@ -7,14 +7,14 @@ import 'package:projects_viewer/provider/git_url_provider.dart';
 import 'package:projects_viewer/provider/tech_stack_provider.dart';
 import 'package:projects_viewer/widgets/github_url_widget.dart';
 import 'package:projects_viewer/widgets/tech_stack_widget.dart';
-import 'package:transparent_image/transparent_image.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:uuid/uuid.dart';
 
 final database = FirebaseFirestore.instance;
 FirebaseStorage firebaseStorage = FirebaseStorage.instance;
+const uuidGenerator = Uuid();
 
 class ProjectAddScreen extends ConsumerStatefulWidget {
   const ProjectAddScreen({super.key});
@@ -28,6 +28,23 @@ class _ProjectAddScreenState extends ConsumerState<ProjectAddScreen> {
   String? imagePath;
   String? name;
   String? description;
+
+  void showProgressBar(BuildContext context) {
+    showDialog(barrierDismissible: false,context: context, builder: (ctx) {return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20)
+      ),
+      child: const SizedBox(height: 100, width: 100,child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircularProgressIndicator(),
+          Text("Please Wait....")
+        ],
+      ))
+    );});
+  }
+
 
   String? nameValidator(String? value) {
     if (value == null || value.trim().isEmpty) {
@@ -43,7 +60,9 @@ class _ProjectAddScreenState extends ConsumerState<ProjectAddScreen> {
     return null;
   }
 
-  void addProject() async {
+  void addProject(BuildContext ctx) async {
+    try {
+
     final isDataValid = formKey.currentState!.validate();
     formKey.currentState!.save();
 
@@ -55,22 +74,35 @@ class _ProjectAddScreenState extends ConsumerState<ProjectAddScreen> {
       return;
     }
 
-    final uuid = FirebaseAuth.instance.currentUser!.uid;
+    showProgressBar(ctx);    
 
-    final data = database.collection('data').doc('${uuid}_$name');
+    final projectId = uuidGenerator.v1();
 
-    final storageRef = firebaseStorage.ref().child('project_images').child('${uuid}_$name.jpg');
+    final userUuid = FirebaseAuth.instance.currentUser!.uid;
+
+    final primaryCollection = database.collection('data').doc(userUuid);
+    final secondaryCollection = primaryCollection.collection('$name').doc(projectId);
+
+    final storageRef = firebaseStorage.ref().child('project_images').child('${userUuid}_$name.jpg');
     await storageRef.putFile(File(imagePath!));
     final downloadUrl = await storageRef.getDownloadURL();
 
-
-    await data.set({
+    await secondaryCollection.set({
         'name': name,
         'description': description,
         'techStack' : ref.read(techStackProvider),
         'gitRepoUrls' : ref.read(gitUrlProvider),
-        'imageUrl' : downloadUrl
+        'imageUrl' : downloadUrl,
+        'projectId': projectId
     });
+
+    Navigator.pop(context);
+    Navigator.pop(context);
+
+    }
+    catch (e) {
+      print(e);
+    } 
   }
 
   void pickImage() async {
@@ -89,10 +121,9 @@ class _ProjectAddScreenState extends ConsumerState<ProjectAddScreen> {
   @override
   Widget build(BuildContext context) {
 
-
     return Scaffold(
       appBar: AppBar(title: const Text("Add Project"),),
-      floatingActionButton: FloatingActionButton(onPressed: addProject, child: const Icon(Icons.add)),
+      floatingActionButton: FloatingActionButton(onPressed: () {addProject(context);}, child: const Icon(Icons.add)),
       body: Center(
         child: SingleChildScrollView(
           child: Form(
