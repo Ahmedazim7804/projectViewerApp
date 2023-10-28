@@ -14,6 +14,7 @@ import 'package:uuid/uuid.dart';
 
 final database = FirebaseFirestore.instance;
 FirebaseStorage firebaseStorage = FirebaseStorage.instance;
+final userUuid = FirebaseAuth.instance.currentUser!.uid;
 const uuidGenerator = Uuid();
 
 class ProjectAddScreen extends ConsumerStatefulWidget {
@@ -78,10 +79,8 @@ class _ProjectAddScreenState extends ConsumerState<ProjectAddScreen> {
 
     final projectId = uuidGenerator.v1();
 
-    final userUuid = FirebaseAuth.instance.currentUser!.uid;
-
     final primaryCollection = database.collection('data').doc(userUuid);
-    final secondaryCollection = primaryCollection.collection('$name').doc(projectId);
+    final secondaryCollection = primaryCollection.collection('Projects').doc(projectId);
 
     final storageRef = firebaseStorage.ref().child('project_images').child('${userUuid}_$name.jpg');
     await storageRef.putFile(File(imagePath!));
@@ -120,7 +119,12 @@ class _ProjectAddScreenState extends ConsumerState<ProjectAddScreen> {
 
   @override
   Widget build(BuildContext context) {
-
+    // FirebaseFirestore.instance.collection('data').get().then((value){
+    //   for (var element in value.docs) { 
+    //         FirebaseFirestore.instance.collection('data').doc(element.id).collection("projects").get().then((v) => print(v.docs.length));
+    //   }
+      
+    // });
     return Scaffold(
       appBar: AppBar(title: const Text("Add Project"),),
       floatingActionButton: FloatingActionButton(onPressed: () {addProject(context);}, child: const Icon(Icons.add)),
