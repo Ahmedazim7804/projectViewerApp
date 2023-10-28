@@ -32,10 +32,10 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    final userProjects = [
+    List<Map<String, dynamic>> userProjects = [
       {
         'name': 'Project1',
-        'description': "This is my project",
+        'description': "This is my project and blah blah blah blah blah blah blah blah blah blah blah blah",
         'techStack' : ['flutter', 'dart', 'python'],
         'gitRepoUrls' : ['https://github.com/ahmedazim7804/sudokuApp'],
         'imageUrl' : 'https://firebasestorage.googleapis.com/v0/b/nsutaiproject.appspot.com/o/project_images%2Frq059YhvhgaA1EyueL4ujSVlXtV2_hellodhdnd.jpg?alt=media&token=9e8ddfe2-54be-4b56-81e4-d653bee3358d',
@@ -62,12 +62,12 @@ class HomeScreen extends StatelessWidget {
       ],),
       body: GridView.builder(
         itemCount: userProjects.length, 
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2,
-        childAspectRatio: 2/3),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 1,
+        childAspectRatio: 2/3.5),
         itemBuilder: (ctx, index) => ProjectItem(
           name: userProjects[index]['name'] as String?,
           description: userProjects[index]['description'] as String?,
-          techStacks: userProjects[index]['techStacks'] as List<String>?,
+          techStacks: userProjects[index]['techStack'] as List<String>,
           gitRepoUrls: userProjects[index]['gitRepoUrls'] as List<String>?,
           imageUrl: userProjects[index]['imageUrl'] as String?,
         ))
