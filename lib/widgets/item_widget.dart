@@ -6,8 +6,8 @@ class ProjectItem extends StatelessWidget {
   const ProjectItem({super.key, required this.name, required this.description, required this.techStacks, required this.gitRepoUrls, required this.imageUrl});
   final String? name;
   final String? description;
-  final List<String> techStacks;
-  final List<String>? gitRepoUrls;
+  final List<dynamic> techStacks;
+  final List<dynamic>? gitRepoUrls;
   final String? imageUrl;
 
   @override
