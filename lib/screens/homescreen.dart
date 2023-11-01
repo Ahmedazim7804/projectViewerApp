@@ -7,7 +7,8 @@ import 'package:projects_viewer/widgets/item_background_widget.dart';
 import 'package:projects_viewer/widgets/item_widget.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  HomeScreen({super.key});
+  final userUuid = FirebaseAuth.instance.currentUser!.uid;
 
   void logout() {
     FirebaseAuth.instance.signOut();
@@ -35,7 +36,7 @@ class HomeScreen extends StatelessWidget {
     void goToAddScreen() {
       Navigator.push(context, MaterialPageRoute(builder: (ctx) { return const ProjectAddScreen();}));
     }
-
+    
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance.collection('data').doc(userUuid).collection('Projects').snapshots(),
       builder: (context, AsyncSnapshot snapshot) {

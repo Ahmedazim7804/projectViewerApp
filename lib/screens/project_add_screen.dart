@@ -14,7 +14,6 @@ import 'package:uuid/uuid.dart';
 
 final database = FirebaseFirestore.instance;
 FirebaseStorage firebaseStorage = FirebaseStorage.instance;
-final userUuid = FirebaseAuth.instance.currentUser!.uid;
 const uuidGenerator = Uuid();
 
 class ProjectAddScreen extends ConsumerStatefulWidget {
@@ -29,6 +28,7 @@ class _ProjectAddScreenState extends ConsumerState<ProjectAddScreen> {
   String? imagePath;
   String? name;
   String? description;
+  final userUuid = FirebaseAuth.instance.currentUser!.uid;
 
   void showProgressBar(BuildContext context) {
     showDialog(barrierDismissible: false,context: context, builder: (ctx) {return Dialog(
@@ -119,7 +119,7 @@ class _ProjectAddScreenState extends ConsumerState<ProjectAddScreen> {
 
   @override
   Widget build(BuildContext context) {
-    
+
     return Scaffold(
       appBar: AppBar(title: const Text("Add Project"),),
       floatingActionButton: FloatingActionButton(onPressed: () {addProject(context);}, child: const Icon(Icons.add)),
