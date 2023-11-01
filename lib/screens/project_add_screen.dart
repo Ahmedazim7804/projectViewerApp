@@ -119,12 +119,7 @@ class _ProjectAddScreenState extends ConsumerState<ProjectAddScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // FirebaseFirestore.instance.collection('data').get().then((value){
-    //   for (var element in value.docs) { 
-    //         FirebaseFirestore.instance.collection('data').doc(element.id).collection("projects").get().then((v) => print(v.docs.length));
-    //   }
-      
-    // });
+    
     return Scaffold(
       appBar: AppBar(title: const Text("Add Project"),),
       floatingActionButton: FloatingActionButton(onPressed: () {addProject(context);}, child: const Icon(Icons.add)),
