@@ -105,8 +105,11 @@ class _ProjectAddScreenState extends ConsumerState<ProjectAddScreen> {
         'projectId': projectId
     });
 
-    Navigator.pop(context);
-    Navigator.pop(context);
+    ref.read(techStackProvider.notifier).state = [];
+    ref.read(gitUrlProvider.notifier).state = [];
+
+    Navigator.pop(context); // Closes the Loading Dialog
+    Navigator.pop(context); // Closes the Add Screen Page
 
     }
     catch (e) {
