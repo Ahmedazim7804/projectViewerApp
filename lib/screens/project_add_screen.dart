@@ -61,6 +61,15 @@ class _ProjectAddScreenState extends ConsumerState<ProjectAddScreen> {
     return null;
   }
 
+  void showImageError() {
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      behavior: SnackBarBehavior.floating,
+      content: Text("Please choose an image..."),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
+      ));
+  }
+
   void addProject(BuildContext ctx) async {
     try {
 
@@ -72,6 +81,7 @@ class _ProjectAddScreenState extends ConsumerState<ProjectAddScreen> {
     }
 
     if (imagePath == null) {
+      showImageError();
       return;
     }
 
